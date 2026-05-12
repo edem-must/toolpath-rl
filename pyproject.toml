@@ -1,0 +1,25 @@
+[project]
+name = "toolpath-rl"
+version = "0.1.0"
+requires-python = ">=3.11"
+
+dependencies = [
+    "gymnasium>=0.29",
+    "stable-baselines3>=2.3",
+    "torch>=2.3",           # CUDA support via pip extras
+    "shapely>=2.0",         # 2D geometry engine
+    "numpy>=1.26",
+    "pyyaml>=6.0",
+    "tensorboard>=2.16",
+]
+
+[project.optional-dependencies]
+dev = ["pytest", "ruff", "black", "ipykernel"]
+3d  = ["open3d>=0.18"]      # Pull in only when ready for 3D
+
+[build-system]
+requires = ["setuptools>=64", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["src"]

@@ -1,0 +1,21 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Train Agent (PPO 2D)",
+      "type": "python",
+      "request": "launch",
+      "program": "${workspaceFolder}/src/agents/train.py",
+      "args": ["--config", "configs/train_ppo.yaml"],
+      "cwd": "${workspaceFolder}",
+      "env": {"PYTHONPATH": "${workspaceFolder}/src"}
+    },
+    {
+      "name": "Test Environment",
+      "type": "python",
+      "request": "launch",
+      "program": "${workspaceFolder}/tests/test_env.py",
+      "cwd": "${workspaceFolder}"
+    }
+  ]
+}

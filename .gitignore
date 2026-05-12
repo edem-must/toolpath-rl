@@ -1,0 +1,30 @@
+﻿# Virtual environment
+.venv/
+
+# Python cache
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+
+# Build artifacts
+*.egg-info/
+dist/
+build/
+
+# VS Code (optional — keep settings.json but ignore personal stuff)
+.vscode/extensions.json
+
+# Outputs (models, logs — too large for git)
+outputs/models/
+outputs/logs/
+
+# Jupyter checkpoints
+.ipynb_checkpoints/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Environment variables
+.env
