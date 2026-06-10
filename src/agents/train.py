@@ -17,6 +17,9 @@ def main():
     with open("configs/env_2d.yaml", "r") as f:
         config = yaml.safe_load(f)
 
+    with open("configs/train_ppo.yaml", "r") as f:
+        train_config = yaml.safe_load(f)
+
     env = DummyVecEnv([make_env(config)])
 
     checkpoint_cb = CheckpointCallback(
@@ -26,13 +29,18 @@ def main():
     model = PPO(
         policy="MultiInputPolicy",
         env=env,
-        verbose=1,
-        tensorboard_log="outputs/logs",
+        verbose=train_config["ppo"]["verbose"],
+        learning_rate=train_config["ppo"]["learning_rate"],
+        n_steps=train_config["ppo"]["n_steps"],
+        batch_size=train_config["ppo"]["batch_size"],
+        n_epochs=train_config["ppo"]["n_epochs"],
+        gamma=train_config["ppo"]["gamma"],
+        tensorboard_log="outputs/logs/",
         device="auto",
     )
 
     model.learn(
-        total_timesteps=100_000,
+        total_timesteps=train_config["train"]["total_timesteps"],
         callback=checkpoint_cb,
     )
 

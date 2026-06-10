@@ -22,7 +22,7 @@ def main():
         obs, reward, terminated, truncated, _ = env.step(action)
         total_reward += reward
         env.render()
-        time.sleep(0.05)  # slow down so you can actually see it
+        time.sleep(0.0001)  # slow down so you can actually see it
 
         if terminated or truncated:
             print(f"Episode done. Total reward: {total_reward:.2f}")
