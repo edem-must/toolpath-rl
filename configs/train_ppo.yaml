@@ -1,12 +1,14 @@
 # configs/train_ppo.yaml
 train:
-  total_timesteps: 100000
-  checkpoint_freq: 25000
+  total_timesteps: 100_000   # plain PPO runs ~1,100 fps -> ~30 min
+  n_envs: 8                    # parallel env processes (12 logical cores)
+  checkpoint_freq: 100000      # total env steps between checkpoints
 
 ppo:
-  learning_rate: 0.0003
-  n_steps: 2048
-  batch_size: 64
+  learning_rate: 0.0003        # linearly decayed, floored at 20% (see train.py)
+  n_steps: 256                 # per-env rollout; buffer = 256 x 8 = 2048
+  batch_size: 256
   n_epochs: 10
   gamma: 0.99
+  ent_coef: 0.0                # >0 inflates Gaussian std until actions saturate (seen in PPO_11/12/14)
   verbose: 1

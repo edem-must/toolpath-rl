@@ -1,7 +1,6 @@
 import numpy as np
-from shapely.geometry import Point, Polygon
+from shapely.geometry import LineString, Point, Polygon
 from shapely.geometry.base import BaseGeometry
-from shapely.affinity import scale
 from engines.base import MachiningEngine
 from shapely.ops import unary_union
 
@@ -9,8 +8,10 @@ from shapely.ops import unary_union
 class Engine2D(MachiningEngine):
     """
     2D milling simulation using Shapely polygon Boolean operations.
-    The workpiece is a Shapely Polygon. Each tool move subtracts a
-    circular disk (tool cross-section) from the remaining material.
+    The workpiece is a Shapely Polygon. Each tool move subtracts the
+    swept capsule (travel path buffered by the tool radius) from the
+    remaining material, so material along the path is milled, not just
+    at the destination.
     """
 
     def __init__(self) -> None:
@@ -19,6 +20,7 @@ class Engine2D(MachiningEngine):
         self._tool_radius: float = 1.0
         self._initial_area: float = 1.0
         self._bounds: tuple[float, float, float, float] = (-10, -10, 10, 10)
+        self._tool_pos: tuple[float, float] | None = None
 
     def initialize(self, workpiece_polygon, tool_radius: float) -> None:
         self._initial_workpiece = workpiece_polygon
@@ -26,15 +28,24 @@ class Engine2D(MachiningEngine):
         self._tool_radius = tool_radius
         self._initial_area = workpiece_polygon.area
         self._bounds = workpiece_polygon.bounds
+        self._tool_pos = None
+
+    def set_tool_position(self, x: float, y: float) -> None:
+        """Place the tool without cutting (used at the start of an episode)."""
+        self._tool_pos = (x, y)
 
     def apply_move(self, x: float, y: float) -> dict:
-        tool_circle = Point(x, y).buffer(self._tool_radius)
+        if self._tool_pos is None or self._tool_pos == (x, y):
+            cutter = Point(x, y).buffer(self._tool_radius)
+        else:
+            cutter = LineString([self._tool_pos, (x, y)]).buffer(self._tool_radius)
+        self._tool_pos = (x, y)
 
         minx, miny, maxx, maxy = self._bounds
         out_of_bounds = not (minx <= x <= maxx and miny <= y <= maxy)
 
         area_before = self._remaining.area
-        self._remaining = self._remaining.difference(tool_circle)
+        self._remaining = self._remaining.difference(cutter)
         if self._remaining.geom_type == "MultiPolygon":
             self._remaining = unary_union(self._remaining)  # merge back
         area_after = self._remaining.area
@@ -72,3 +83,4 @@ class Engine2D(MachiningEngine):
 
     def reset(self) -> None:
         self._remaining = self._initial_workpiece
+        self._tool_pos = None

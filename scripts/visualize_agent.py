@@ -2,13 +2,16 @@ import time
 import yaml
 from stable_baselines3 import PPO
 from env.toolpath_env import ToolpathEnv2D
+# Imported so the saved policy (custom CNN extractor) can be reconstructed
+from agents.feature_extractor import ToolpathCombinedExtractor  # noqa: F401
 
 
 def main():
     with open("configs/env_2d.yaml", "r") as f:
         config = yaml.safe_load(f)
 
-    env = ToolpathEnv2D(config=config["env"], render_mode="human")
+    env_config = {**config["env"], **config["reward"]}
+    env = ToolpathEnv2D(config=env_config, render_mode="human")
 
     # Load the latest saved model
     model = PPO.load("outputs/models/ppo_toolpath2d_final", env=env)
@@ -22,7 +25,7 @@ def main():
         obs, reward, terminated, truncated, _ = env.step(action)
         total_reward += reward
         env.render()
-        time.sleep(0.0001)  # slow down so you can actually see it
+        time.sleep(0.001)  # slow down so you can actually see it
 
         if terminated or truncated:
             print(f"Episode done. Total reward: {total_reward:.2f}")

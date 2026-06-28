@@ -33,3 +33,6 @@ Thumbs.db
 *.pt
 *.pth
 *.ckpt
+outputs/
+CONTEXT_FOR_CLAUDE.md
+misc/

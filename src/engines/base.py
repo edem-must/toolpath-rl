@@ -11,7 +11,8 @@ class MachiningEngine(ABC):
     @abstractmethod
     def apply_move(self, x: float, y: float) -> dict:
         """
-        Move tool to (x, y) in world coordinates.
+        Move tool to (x, y) in world coordinates, cutting material along
+        the swept path from the previous tool position.
         Returns dict with keys:
           - removed_area: float  (how much material was cut)
           - collision:    bool   (tool hit a fixture or out of bounds)

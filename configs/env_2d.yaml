@@ -1,10 +1,17 @@
 # configs/env_2d.yaml
 env:
   grid_size: 64
-  max_steps: 500
+  max_steps: 800    # optimal sweep needs ~250 steps; slack so the agent can ever finish
+  step_size: 0.4    # max tool travel per step, world units
+  tool_radius: 0.5  # world units
 
 reward:
-  material_weight: 10.0
-  step_penalty: 0.01
-  collision_penalty: 5.0
-  wasted_move_penalty: 0.5
+  material_weight: 50.0     # full clear = +50; cutting must dominate all penalties
+  coverage_weight: 5.0      # reward for covering new area each step (must not dominate cutting)
+  progress_weight: 4.0      # potential-based shaping toward nearest material
+  step_penalty: 0.03        # higher -> push for shorter total path
+  collision_penalty: 0.2    # boundary press while edge-milling must stay cheaper than the cut earns
+  revisit_penalty: 0.02     # moving over visited ground (traversal stays cheap)
+  idle_penalty: 0.3         # no removal AND no new coverage -> parking is strictly bad
+  milestone_bonus: 5.0      # one-time bonus at 25/50/75% material removed
+  gamma: 0.99               # must match train_ppo.yaml ppo.gamma for valid shaping

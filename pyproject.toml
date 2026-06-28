@@ -6,11 +6,15 @@ requires-python = ">=3.11"
 dependencies = [
     "gymnasium>=0.29",
     "stable-baselines3>=2.3",
+    "sb3-contrib>=2.3",     # RecurrentPPO (LSTM policy)
     "torch>=2.3",           # CUDA support via pip extras
     "shapely>=2.0",         # 2D geometry engine
+    "scipy>=1.11",          # distance transform for reward shaping
     "numpy>=1.26",
     "pyyaml>=6.0",
     "tensorboard>=2.16",
+    "matplotlib>=3.8",      # Visualization and animation
+    "opencv-python>=4.8",   # MP4 video writing
 ]
 
 [project.optional-dependencies]
@@ -23,3 +27,7 @@ build-backend = "setuptools.build_meta"
 
 [tool.setuptools.packages.find]
 where = ["src"]
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
+testpaths = ["tests"]
